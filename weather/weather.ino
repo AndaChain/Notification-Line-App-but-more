@@ -4,12 +4,7 @@
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
 
-#define SSID "aaa"
-#define PASSWORD "12345678"
-#define LINE_TOKEN "V4WV3m39wznma4rRTvutdnV5ZaM6HBynaCOFQmFVQQh"
 #define LM73_ADDR 0x4D
-
-String openWeatherMapApiKey = "61f7935a64d1a1d79c917f3f7da1cf75";
 
 String jsonBuffer;
 String temp_sensor_string;
@@ -21,7 +16,7 @@ String city = "Bangkok";
 String countryCode = "TH";
 
 void initWifi(){
-  WiFi.begin(SSID, PASSWORD);
+  WiFi.begin(ssid, PASSWORD);
 
   Serial.println("WiFi connecting to");
 
