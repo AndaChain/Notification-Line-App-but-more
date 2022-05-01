@@ -1,5 +1,9 @@
 #include <TridentTD_LineNotify.h>
 #include <Wire.h>
+#include <Adafruit_GFX.h>
+#include "Adafruit_LEDBackpack.h"
+
+Adafruit_8x16minimatrix matrix;
 
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
@@ -109,20 +113,29 @@ void setup(){
   initWifi();
   initLine();
   Wire1.begin(4, 5);
+  matrix.begin(0x70);
+  matrix.setRotation(1);
+  matrix.setTextSize(1);
+  matrix.setTextColor(LED_ON);
+  matrix.setTextWrap(false);
 
 }
 
 void loop(){
   temp_forecast = forecast();
   temp_sensor = readTemperature();
-
+  
   temp_sensor_string = "Over Temperature: "+String(temp_sensor);
   temp_forecast_string = "Temperature From OpenWeather: "+String(temp_forecast);
-
+  
   if(temp_sensor >= 32.00){
     send_line(temp_sensor_string+"\n\n"+temp_forecast_string);
     Serial.println(temp_sensor_string+"\n\n"+temp_forecast_string);
   }
 
+  matrix.clear();
+  matrix.print(String(temp_sensor));
+  matrix.writeDisplay();
+  
   delay(5000);
 }
