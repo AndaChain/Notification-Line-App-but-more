@@ -1,14 +1,15 @@
 #include <TridentTD_LineNotify.h>
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
-
-Adafruit_8x16minimatrix matrix;
-
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
+#include <Adafruit_GFX.h>
+#include "Adafruit_LEDBackpack.h"
+#include "API_Token.h"
+#include "Wifi_info.h"
 
 #define LM73_ADDR 0x4D
+
+Adafruit_8x16minimatrix matrix;
 
 String jsonBuffer;
 String temp_sensor_string;
