@@ -1,9 +1,20 @@
-#include <TridentTD_LineNotify.h>
+// Sensor Temperature
 #include <Wire.h>
+
+// HTTP
 #include <HTTPClient.h>
+
+// Linenotify and 
+#include <TridentTD_LineNotify.h>
+
+// Tool for read JSON
 #include <Arduino_JSON.h>
-#include <Adafruit_GFX.h>
+
+// LED
+//#include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
+
+// keep it a secret token.
 #include "API_Token.h"
 #include "Wifi_info.h"
 
@@ -17,7 +28,7 @@ String temp_forecast_string;
 float temp_sensor;
 float temp_forecast;
 
-String city = "Bangkok";
+String city = "Surat Thani";
 String countryCode = "TH";
 
 void initWifi(){
@@ -65,12 +76,11 @@ float readTemperature(){
 }
 
 float forecast(){
-  String serverPath = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + countryCode + "&APPID=" + openWeatherMapApiKey;
-        
+  String serverPath = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + countryCode + "&APPID=" + openWeatherMapApiKey; // link that take to JSON data
+  //Serial.print(serverPath);
   jsonBuffer = httpGETRequest(serverPath.c_str());
   JSONVar myObject = JSON.parse(jsonBuffer);
-
-  // JSON.typeof(jsonVar) can be used to get the type of the var
+  
   if (JSON.typeof(myObject) == "undefined"){
     Serial.println("Parsing input failed!");
     return 0.0;
@@ -84,18 +94,17 @@ float forecast(){
 String httpGETRequest(const char* serverName){
   WiFiClient client;
   HTTPClient http;
-    
+
   // Your Domain name with URL path or IP address with path
+  // initiate Server and Client
   http.begin(client, serverName);
   
-  // Send HTTP POST request
+  // Start Connection And Send HTTP POST request
   int httpResponseCode = http.GET();
   
   String payload = "{}"; 
   
   if (httpResponseCode>0) {
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
     payload = http.getString();
   }
   else {
@@ -132,11 +141,12 @@ void loop(){
   if(temp_sensor >= 32.00){
     send_line(temp_sensor_string+"\n\n"+temp_forecast_string);
     Serial.println(temp_sensor_string+"\n\n"+temp_forecast_string);
+
   }
 
-  matrix.clear();
-  matrix.print(String(temp_sensor));
-  matrix.writeDisplay();
+    matrix.clear();
+    matrix.print(String(temp_sensor));
+    matrix.writeDisplay();
   
   delay(5000);
 }
