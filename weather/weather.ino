@@ -172,9 +172,12 @@ void loop(){
   delay(SEND_DELAY);
 
   thingspeak(temp_forecast, temp_sensor);
-
-  matrix.clear();
-  matrix.print(String(temp_sensor));
-  matrix.writeDisplay();
-
+  
+  for (int8_t x = 3; x >= -16; x--) {
+    matrix.clear();
+    matrix.setCursor(x, 0);
+    matrix.print(temp_sensor);
+    matrix.writeDisplay();
+    delay(100);
+  }
 }
