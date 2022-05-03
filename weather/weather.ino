@@ -29,6 +29,8 @@ Adafruit_8x16minimatrix matrix;
 String jsonBuffer;
 String temp_sensor_string;
 String temp_forecast_string;
+String Mode = "LM73";
+float temp;
 float temp_sensor;
 float temp_forecast;
 
@@ -151,7 +153,8 @@ void setup(){
   matrix.setTextSize(1);
   matrix.setTextColor(LED_ON);
   matrix.setTextWrap(false);
-
+  attachInterrupt(16, ChangeMode, RISING);
+  attachInterrupt(14, ChangeMode, RISING);
 }
 
 void loop(){
@@ -167,6 +170,14 @@ void loop(){
 
   }
 
+  void ChangeMode(){
+    if(Mode == "LM73"){
+      Mode = "openWeather";
+    }else{
+      Mode = "LM73";
+    }
+  }
+
   Serial.println(temp_sensor_string+"\n\n"+temp_forecast_string);
 
   //delay(SEND_DELAY);
@@ -174,13 +185,16 @@ void loop(){
   thingspeak(temp_forecast, temp_sensor);
   
   for(int8_t y = 0; y < 8; y++){
-
-    temp_sensor = readTemperature();
-    Serial.println("Now, Temperature is "+String(temp_sensor)+"C*");
+    if(Mode == "LM73"){
+      temp = readTemperature();
+      Serial.println("Now, Temperature is "+String(temp_sensor)+"C*");
+    }else{
+      temp = temp_forecast;
+    }
     for (int8_t x = 3; x >= -16; x--) {
       matrix.clear();
       matrix.setCursor(x, 0);
-      matrix.print(temp_sensor);
+      matrix.print(temp);
       matrix.writeDisplay();
       delay(100);
     }
