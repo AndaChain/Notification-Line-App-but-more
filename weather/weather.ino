@@ -158,8 +158,8 @@ void loop(){
   temp_forecast = forecast();
   temp_sensor = readTemperature();
   
-  temp_sensor_string = "Over Temperature: "+String(temp_sensor);
-  temp_forecast_string = "Temperature From OpenWeather: "+String(temp_forecast);
+  temp_sensor_string = "Over Temperature: "+String(temp_sensor)+"C*";
+  temp_forecast_string = "Temperature From OpenWeather: "+String(temp_forecast)+"C*";
   
   if(temp_sensor >= 32.00){
     send_line(temp_sensor_string+"\n\n"+temp_forecast_string);
@@ -169,15 +169,21 @@ void loop(){
 
   Serial.println(temp_sensor_string+"\n\n"+temp_forecast_string);
 
-  delay(SEND_DELAY);
+  //delay(SEND_DELAY);
 
   thingspeak(temp_forecast, temp_sensor);
   
-  for (int8_t x = 3; x >= -16; x--) {
-    matrix.clear();
-    matrix.setCursor(x, 0);
-    matrix.print(temp_sensor);
-    matrix.writeDisplay();
-    delay(100);
+  for(int8_t y = 0; y < 8; y++){
+
+    temp_sensor = readTemperature();
+    Serial.println("Now, Temperature is "+String(temp_sensor)+"C*");
+    for (int8_t x = 3; x >= -16; x--) {
+      matrix.clear();
+      matrix.setCursor(x, 0);
+      matrix.print(temp_sensor);
+      matrix.writeDisplay();
+      delay(100);
+    }
+
   }
 }
