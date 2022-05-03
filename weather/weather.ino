@@ -18,7 +18,11 @@
 #include "API_Token.h"
 #include "Wifi_info.h"
 
+// ThingSpeak.h
+#include "ThingSpeak.h"
+
 #define LM73_ADDR 0x4D
+#define SEND_DELAY 15000
 
 Adafruit_8x16minimatrix matrix;
 
@@ -27,6 +31,9 @@ String temp_sensor_string;
 String temp_forecast_string;
 float temp_sensor;
 float temp_forecast;
+
+WiFiClient client;
+HTTPClient http;
 
 String city = "Surat Thani";
 String countryCode = "TH";
@@ -91,9 +98,23 @@ float forecast(){
   return(temp_real.toFloat() - 273.15 );
 }
 
+void thingspeak(float value1, float value2){
+  ThingSpeak.setField(1, value1);
+  ThingSpeak.setField(2, value2);
+
+  int tempo = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
+
+  if(tempo == 200){
+      //Serial.println("Temperature Sensor: " + tempVal);
+      //Serial.println("LDR Sensor: " + ldrVal);
+      Serial.println("....Channel update successful.");
+    }
+  else{
+      Serial.println("Problem updating channel. HTTP error code " + String(tempo));
+  }
+}
+
 String httpGETRequest(const char* serverName){
-  WiFiClient client;
-  HTTPClient http;
 
   // Your Domain name with URL path or IP address with path
   // initiate Server and Client
@@ -122,8 +143,10 @@ void setup(){
   Serial.begin(9600);
   initWifi();
   initLine();
+  ThingSpeak.begin(client);
   Wire1.begin(4, 5);
   matrix.begin(0x70);
+
   matrix.setRotation(1);
   matrix.setTextSize(1);
   matrix.setTextColor(LED_ON);
@@ -140,13 +163,18 @@ void loop(){
   
   if(temp_sensor >= 32.00){
     send_line(temp_sensor_string+"\n\n"+temp_forecast_string);
-    Serial.println(temp_sensor_string+"\n\n"+temp_forecast_string);
+    //Serial.println(temp_sensor_string+"\n\n"+temp_forecast_string);
 
   }
 
-    matrix.clear();
-    matrix.print(String(temp_sensor));
-    matrix.writeDisplay();
-  
-  delay(5000);
+  Serial.println(temp_sensor_string+"\n\n"+temp_forecast_string);
+
+  delay(SEND_DELAY);
+
+  thingspeak(temp_forecast, temp_sensor);
+
+  matrix.clear();
+  matrix.print(String(temp_sensor));
+  matrix.writeDisplay();
+
 }
