@@ -23,6 +23,8 @@
 
 #define LM73_ADDR 0x4D
 #define SEND_DELAY 15000
+#define LED_PIN 15
+#define BUZZER_PIN 13
 
 Adafruit_8x16minimatrix matrix;
 
@@ -140,6 +142,15 @@ String httpGETRequest(const char* serverName){
   return payload;
 }
 
+void Buzzer(){
+  for(int i = 0 ; i < 300 ; i++){
+    delayMicroseconds(200);
+    digitalWrite(BUZZER_PIN, HIGH);
+    delayMicroseconds(200);
+    digitalWrite(BUZZER_PIN , LOW);
+  }
+}
+
 void setup(){
 
   Serial.begin(9600);
@@ -155,6 +166,8 @@ void setup(){
   matrix.setTextWrap(false);
   attachInterrupt(16, ChangeMode, RISING);
   attachInterrupt(14, ChangeMode, RISING);
+  pinMode(LED_PIN , OUTPUT);
+  pinMode(BUZZER_PIN , OUTPUT);
 }
 
 void loop(){
@@ -173,8 +186,14 @@ void loop(){
   void ChangeMode(){
     if(Mode == "LM73"){
       Mode = "openWeather";
+      digitalWrite(LED_PIN , HIGH);
+      Buzzer();
+      delay(300);
+      Buzzer();
     }else{
       Mode = "LM73";
+      digitalWrite(LED_PIN , LOW);
+      Buzzer();
     }
   }
 
