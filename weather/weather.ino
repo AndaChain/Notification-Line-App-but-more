@@ -23,6 +23,8 @@
 
 #define LM73_ADDR 0x4D
 #define SEND_DELAY 15000
+#define LED_PIN 15
+#define BUZZER_PIN 13
 
 Adafruit_8x16minimatrix matrix;
 
@@ -140,6 +142,30 @@ String httpGETRequest(const char* serverName){
   return payload;
 }
 
+void ChangeMode(){
+  if(Mode == "LM73"){
+    Mode = "openWeather";
+    digitalWrite(LED_PIN , HIGH);
+    Buzzer();
+    delay(300);
+    Buzzer();
+  }
+  else{
+    Mode = "LM73";
+    digitalWrite(LED_PIN , LOW);
+    Buzzer();
+  }
+}
+
+void Buzzer(){
+  for(int i = 0 ; i < 300 ; i++){
+    delayMicroseconds(200);
+    digitalWrite(BUZZER_PIN, HIGH);
+    delayMicroseconds(200);
+    digitalWrite(BUZZER_PIN , LOW);
+  }
+}
+
 void setup(){
 
   Serial.begin(9600);
@@ -153,17 +179,11 @@ void setup(){
   matrix.setTextSize(1);
   matrix.setTextColor(LED_ON);
   matrix.setTextWrap(false);
-  //attachInterrupt(16, ChangeMode, RISING); // S1
-  attachInterrupt(14, ChangeMode, RISING); // S2
-}
-
-void ChangeMode(){
-  if(Mode == "LM73"){
-      Mode = "openWeather";
-  }
-  else{
-      Mode = "LM73";
-  }
+  
+  //attachInterrupt(16, ChangeMode, RISING); //S1
+  attachInterrupt(14, ChangeMode, RISING); //S2
+  pinMode(LED_PIN , OUTPUT);
+  pinMode(BUZZER_PIN , OUTPUT);
 }
 
 void loop(){
@@ -190,7 +210,8 @@ void loop(){
     if(Mode == "LM73"){
       temp = readTemperature();
       Serial.println("Now, Temperature is "+String(temp_sensor)+"C*");
-    }else{
+    }
+    else{
       temp = temp_forecast;
     }
     for (int8_t x = 3; x >= -16; x--) {
