@@ -143,17 +143,21 @@ String httpGETRequest(const char* serverName){
 }
 
 void ChangeMode(){
+  Serial.println("Interrupt");
+  // NTP on = LM73
+  // NTP off = openWeather
+  
   if(Mode == "LM73"){
     Mode = "openWeather";
     digitalWrite(LED_PIN , HIGH);
-    Buzzer();
-    delay(300);
-    Buzzer();
+    //Buzzer();
+    //delay(300);
+    //Buzzer();
   }
   else{
     Mode = "LM73";
     digitalWrite(LED_PIN , LOW);
-    Buzzer();
+    //Buzzer();
   }
 }
 
@@ -181,9 +185,12 @@ void setup(){
   matrix.setTextWrap(false);
   
   //attachInterrupt(16, ChangeMode, RISING); //S1
-  attachInterrupt(14, ChangeMode, RISING); //S2
+  //pinMode(14, INPUT);
+  //attachInterrupt(14, ChangeMode, RISING); //S2
+  attachInterrupt(digitalPinToInterrupt(14), ChangeMode, RISING);
   pinMode(LED_PIN , OUTPUT);
   pinMode(BUZZER_PIN , OUTPUT);
+  
 }
 
 void loop(){
