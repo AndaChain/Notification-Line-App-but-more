@@ -144,25 +144,25 @@ String httpGETRequest(const char* serverName){
 
 void ChangeMode(){
   Serial.println("Interrupt");
-  // NTP on = LM73
-  // NTP off = openWeather
-  
+  // NTP on = LM73, short beep
+  // NTP off = openWeather, long beep
+
   if(Mode == "LM73"){
     Mode = "openWeather";
     digitalWrite(LED_PIN , HIGH);
-    //Buzzer();
-    //delay(300);
-    //Buzzer();
+    Buzzer(200);
+    delay(80);
+    Buzzer(200);
   }
   else{
     Mode = "LM73";
     digitalWrite(LED_PIN , LOW);
-    //Buzzer();
+    Buzzer(100);
   }
 }
 
-void Buzzer(){
-  for(int i = 0 ; i < 300 ; i++){
+void Buzzer(int N){
+  for(int i = 0 ; i < N ; i++){
     delayMicroseconds(200);
     digitalWrite(BUZZER_PIN, HIGH);
     delayMicroseconds(200);
