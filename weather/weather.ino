@@ -29,13 +29,15 @@ Adafruit_8x16minimatrix matrix;
 String jsonBuffer;
 String temp_sensor_string;
 String temp_forecast_string;
+String Mode = "LM73";
+float temp;
 float temp_sensor;
 float temp_forecast;
 
 WiFiClient client;
 HTTPClient http;
 
-String city = "Surat Thani";
+String city = "Bangkok";
 String countryCode = "TH";
 
 void initWifi(){
@@ -151,7 +153,17 @@ void setup(){
   matrix.setTextSize(1);
   matrix.setTextColor(LED_ON);
   matrix.setTextWrap(false);
+  //attachInterrupt(16, ChangeMode, RISING); // S1
+  attachInterrupt(14, ChangeMode, RISING); // S2
+}
 
+void ChangeMode(){
+  if(Mode == "LM73"){
+      Mode = "openWeather";
+  }
+  else{
+      Mode = "LM73";
+  }
 }
 
 void loop(){
@@ -167,6 +179,7 @@ void loop(){
 
   }
 
+
   Serial.println(temp_sensor_string+"\n"+temp_forecast_string);
 
   //delay(SEND_DELAY);
@@ -174,13 +187,16 @@ void loop(){
   thingspeak(temp_forecast, temp_sensor);
   
   for(int8_t y = 0; y < 8; y++){
-
-    temp_sensor = readTemperature();
-    Serial.println("Now, Temperature is "+String(temp_sensor)+"C*");
+    if(Mode == "LM73"){
+      temp = readTemperature();
+      Serial.println("Now, Temperature is "+String(temp_sensor)+"C*");
+    }else{
+      temp = temp_forecast;
+    }
     for (int8_t x = 3; x >= -16; x--) {
       matrix.clear();
       matrix.setCursor(x, 0);
-      matrix.print(temp_sensor);
+      matrix.print(temp);
       matrix.writeDisplay();
       delay(100);
     }
