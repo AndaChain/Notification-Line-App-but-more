@@ -200,7 +200,7 @@ void loop(){
   temp_sensor_string = "Over Temperature: "+String(temp_sensor)+"C*";
   temp_forecast_string = "Temperature From OpenWeather: "+String(temp_forecast)+"C*";
   
-  if(temp_sensor >= 32.00){
+  if(temp_sensor >= 34.00){
     send_line(temp_sensor_string+"\n"+temp_forecast_string);
     //Serial.println(temp_sensor_string+"\n\n"+temp_forecast_string);
 
